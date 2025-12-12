@@ -1,0 +1,142 @@
+<!-- CheckboxList::make('selected_service_ids')
+                    ->label('Layanan Paket & Tambahan (Tersimpan)')
+                    ->columns(3)
+                    ->options(function ($get, $livewire) {
+                        $packageId = $get('package_id');
+                        $record = $livewire->record ?? null;
+                        
+                        if ($record && $record->exists) {
+                            return $record->services()
+                                ->where(function ($q) {
+                                    $q->where('is_required', true)   // hanya layanan paket yang dipilih
+                                    ->orWhere('is_custom', true)   // layanan tambahan custom
+                                    ->orWhereNull('package_id');   // optional yang bukan milik paket
+                                })
+                                ->pluck('service_name', 'service_id')
+                                ->toArray();
+                        }
+
+                        $formPackageId = $get('package_id');
+                        $record = $livewire->record ?? null;
+
+                        if (! $record || ! $record->exists) {
+                            if (! $formPackageId) return [];
+                            return \App\Models\Package::find($formPackageId)?->services->pluck('name', 'id')->toArray() ?? [];
+                        }
+
+                        $savedPackageId = $record->package_id;
+                        $isPackageChanged = (string) $formPackageId !== (string) $savedPackageId;
+
+                        if ($isPackageChanged) {
+                            if (! $formPackageId) return [];
+                            return \App\Models\Package::find($formPackageId)?->services->pluck('name', 'id')->toArray() ?? [];
+                        }
+
+                        // LOGIKA LAMA: Jika Order Baru (Draft/Create), ambil dari Master Paket
+                        if (! $packageId) return [];
+                        $package = \App\Models\Package::with('services')->find($packageId);
+                        if (! $package) return [];
+                        return $package->services->pluck('name', 'id')->toArray();
+                    })
+                    // --- 2. SOLUSI UTAMA: Paksa Centang Saat Halaman Dimuat ---
+                    ->afterStateHydrated(function ($component, $livewire) {
+                        $record = $livewire->record ?? null;
+                        
+                        // Hanya jalankan jika sedang membuka data yang sudah ada (Edit Mode)
+                        if (! $record || ! $record->exists) return;
+
+                        // Ambil semua ID layanan yang tersimpan di order ini
+                        $savedServiceIds = $record->services()
+                            ->pluck('service_id')
+                            ->map(fn ($id) => (string) $id) // PENTING: Ubah ke string agar cocok dengan key Checkbox
+                            ->toArray();
+
+                        // Masukkan data tersebut ke dalam state checkbox
+                        $component->state($savedServiceIds);
+                    })
+
+                    
+                    ->reactive()
+                    ->disabled(fn ($livewire) => isset($livewire->record) && $livewire->record->status !== 'draft')
+                    ->columnSpanFull()
+                    ->hidden(fn ($livewire) => 
+                        $livewire instanceof \Filament\Resources\Pages\ViewRecord
+                        || $livewire instanceof \Filament\Resources\Pages\ListRecords
+                    )
+                    ->afterStateUpdated(function ($get, $set) {
+                        $packageId = $get('package_id');
+                        if (! $packageId) {
+                            $set('base_price', 0);
+                            $set('total_price', 0);
+                            return;
+                        }
+
+                        $package = \App\Models\Package::with('services')->find($packageId);
+                        $packagePrice = (float) ($package->price ?? 0);
+
+                        $serviceIds = $get('selected_service_ids') ?? [];
+                        $unselectedServices = $package->services->whereNotIn('id', $serviceIds);
+
+                        // basePrice = package price - sum of unselected service prices
+                        $unselectedTotal = (float) $unselectedServices->sum(fn ($s) => (float) ($s->pivot->value_price ?? $s->harga_layanan ?? 0));
+                        $basePrice = max(0, $packagePrice - $unselectedTotal);
+
+                        // if there are optional services selected, include them in the total
+                        $optionalIds = $get('optional_service_ids') ?? [];
+                        $optionalTotal = 0;
+                        if (! empty($optionalIds)) {
+                            $optional = \App\Models\Services::whereIn('id', $optionalIds)->get();
+                            $optionalTotal = (float) $optional->sum(fn ($s) => (float) ($s->harga_layanan ?? 0));
+                        }
+
+                        $set('base_price', $basePrice);
+                        $set('total_price', $basePrice + $optionalTotal);
+                    }), -->
+
+
+Select::make('package_id')
+                    ->relationship('package', 'name')
+                    ->label('Paket')
+                    ->searchable()
+                    ->preload()
+                    ->reactive()
+                    ->disabled(fn ($livewire) => isset($livewire->record) && $livewire->record->status !== 'draft')
+                    ->required()
+                    ->afterStateUpdated(function ($state, $set) {
+                        if (! $state) {
+                            $set('selected_service_ids', []);
+                            $set('base_price', 0);
+                            $set('total_price', 0);
+                            return;
+                        }
+
+                        $package = \App\Models\Package::with('services')->find($state);
+                        if (! $package) {
+                            $set('selected_service_ids', []);
+                            $set('base_price', 0);
+                            $set('total_price', 0);
+                            return;
+                        }
+
+                        // default select all services from this package
+                        $serviceIds = $package->services->pluck('id')->toArray();
+                        $set('selected_service_ids', $serviceIds);
+
+                        // set the package's base (list) price for display
+                        $set('package_price', (float) ($package->price ?? 0));
+
+                        // base price = package price - unselected services (all selected by default, so no deduction)
+                        $packagePrice = (float) ($package->price ?? 0);
+                        $unselectedServices = $package->services->whereNotIn('id', $serviceIds);
+                        
+                        // FIX: gunakan value_price > 0, jika tidak → fallback harga_layanan
+                        $unselectedTotal = $unselectedServices->sum(function ($service) {
+                            $pivotPrice = (float) ($service->pivot->value_price ?? 0);
+                            if ($pivotPrice > 0) return $pivotPrice;
+                            return (float) ($service->harga_layanan ?? 0);
+                        });
+                        
+                        $basePrice = max(0, $packagePrice - $unselectedTotal);
+                        $set('base_price', $basePrice);
+                        $set('total_price', $basePrice);
+                    }),
