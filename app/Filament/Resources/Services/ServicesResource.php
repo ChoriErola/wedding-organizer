@@ -19,7 +19,7 @@ class ServicesResource extends Resource
 {
     protected static ?string $model = Services::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::QueueList;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQueueList;
     protected static ?string $recordTitleAttribute = 'name';
     protected static string | UnitEnum | null $navigationGroup = 'Paket & Layanan';
     protected static ?string $navigationLabel = 'Data Layanan';

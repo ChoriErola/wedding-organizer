@@ -40,14 +40,13 @@ class ViewOrder extends ViewRecord
                     Forms\Components\Select::make('status')
                         ->label('Status')
                         ->options([
-                            'draft' => 'Draft',
                             'confirmed' => 'Confirmed',
-                            'paid' => 'Paid',
+                            'paid in progress' => 'Paid | In Progress',
+                            'paid completed' => 'Paid | Completed',
                             'completed' => 'Completed',
                             'cancelled' => 'Cancelled',
                         ])
                         ->disabled(),
-
                     Forms\Components\Textarea::make('notes')
                         ->label('Catatan')
                         ->disabled()
@@ -70,41 +69,20 @@ class ViewOrder extends ViewRecord
                         ->formatStateUsing(fn ($state) =>
                             $state ? number_format($state, 0, ',', '.') : '0'
                         ),
+
+                    Forms\Components\Textarea::make('all_services_display')
+                        ->label('Layanan (Dipilih)')
+                        ->disabled()
+                        ->rows(8)
+                        ->dehydrated(false)
+                        ->formatStateUsing(function ($record) {
+                            if (! $record || ! $record->exists) return '-';
+                            $services = $record->services()->pluck('service_name')->toArray();
+                            return ! empty($services) ? implode("\n", $services) : 'Tidak ada layanan terpilih';
+                        })
+                        ->columnSpanFull(),
                 ])
                 ->columns(2),
-
-            Section::make('Layanan Paket (Dipilih)')
-                ->schema([
-                    Forms\Components\CheckboxList::make('selected_services')
-                        ->label('')
-                        ->options(function ($record) {
-                            if (!$record) return [];
-                            return $record->services()
-                                ->where('is_required', true)
-                                ->pluck('service_name', 'id')
-                                ->toArray();
-                        })
-                        ->disabled()
-                        ->columnSpanFull(),
-                ])
-                ->columnSpanFull(),
-
-            Section::make('Layanan Tambahan (Dipilih)')
-                ->schema([
-                    Forms\Components\CheckboxList::make('optional_services')
-                        ->label('')
-                        ->options(function ($record) {
-                            if (!$record) return [];
-                            return $record->services()
-                                ->where('is_required', false)
-                                ->whereNull('package_id')
-                                ->pluck('service_name', 'id')
-                                ->toArray();
-                        })
-                        ->disabled()
-                        ->columnSpanFull(),
-                ])
-                ->columnSpanFull(),
 
             Section::make('Total Harga')
                 ->schema([

@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Filament\Resources\ContactUs\Pages;
+
+use App\Filament\Resources\ContactUs\ContactUsResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditContactUs extends EditRecord
+{
+    protected static string $resource = ContactUsResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
+    }
+
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+}

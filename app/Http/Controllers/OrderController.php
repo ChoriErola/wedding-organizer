@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Package;
 use App\Models\Services;
 use App\Models\Order;
-use App\Services\Pemesanan\Pesanan;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
@@ -44,12 +43,12 @@ class OrderController
             'event_date' => $request->input('event_date'),
             'base_price' => 0,
             'total_price' => 0,
-            'status' => 'draft',
+            'status' => 'confirmed',
             'notes' => $request->input('notes'),
         ]);
 
         // attach package's services & compute totals
-        Pesanan::handle($order, $package);
+        Order::handle($order, $package);
 
         // Optionally attach any extra services chosen (if you want to support adding custom picks)
         // For now we assume package services only.

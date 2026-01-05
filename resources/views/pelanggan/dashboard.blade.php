@@ -41,51 +41,47 @@
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="assets/img/logo.png" alt=""> -->
+      <a href="{{ route('dashboard') }}" class="logo d-flex align-items-center me-auto">
         <h1 class="sitename">Nakkawin Decoration</h1>
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="#hero" class="active">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#portfolio">Portfolio</a></li>
-          <li><a href="#team">Team</a></li>
-          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
+          <li><a href="#beranda" class="active">Beranda</a></li>
+          <li><a href="#tentangkami">Tentang Kami</a></li>
+          <li><a href="#paket">Paket</a></li>
+          <li><a href="#layanan">Layanan</a></li>
+          <li>
+            <a href="{{ route('pelanggan.pesanan') }}">
+              Pesanan
+            </a>
           </li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="#portfolio">Portfolio</a></li>
+          <li><a href="#kontak">Kontak</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
+    </nav>
 
-      {{-- <a class="cta-btn" href="{{ route('logout') }}">Logout</a> --}}
-        <li>
-            <a class="dropdown-item" href="{{ route('logout') }}"
-                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                Log Out
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                @csrf
-            </form>
-        </li>
+      <!-- Profile Dropdown -->
+      <div class="profile-dropdown position-relative">
+        <button type="button" class="profile-btn" id="profileBtn" onclick="toggleProfileDropdown()">
+          <i class="bi bi-person-circle"></i>
+        </button>
+        
+        <div class="profile-menu" id="profileMenu">
+          <a href="{{ route('profile') }}" class="dropdown-item">
+            <i class="bi bi-person"></i> Profil Saya
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </a>
+        </div>
+      </div>
+
+      <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+        @csrf
+      </form>
 
     </div>
   </header>
@@ -93,53 +89,85 @@
   <main class="main">
 
     <!-- Hero Section -->
-    <section id="hero" class="hero section dark-background">
+    <section id="beranda" class="hero section dark-background">
 
-      <img src="{{ asset('Dewi-1.0.0/assets/img/hero-bg.jpg') }}" alt="" data-aos="fade-in">
+      <div class="swiper-container hero-swiper">
+        <div class="swiper-wrapper">
+          @forelse($portfolios as $portfolio)
+            @if($portfolio->images && is_array($portfolio->images))
+              @foreach($portfolio->images as $image)
+                <div class="swiper-slide">
+                  <img src="{{ asset('storage/' . $image) }}" alt="Portfolio" class="hero-image" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+              @endforeach
+            @endif
+          @empty
+            <div class="swiper-slide">
+              <img src="{{ asset('Dewi-1.0.0/assets/img/hero-bg.jpg') }}" alt="" class="hero-image" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+          @endforelse
+        </div>
+      </div>
 
-      <div class="container d-flex flex-column align-items-center">
-        <h2 data-aos="fade-up" data-aos-delay="100">PLAN. LAUNCH. GROW.</h2>
-        <p data-aos="fade-up" data-aos-delay="200">We are team of talented designers making websites with Bootstrap</p>
+      <div class="container d-flex flex-column align-items-center" style="position: relative; z-index: 10;">
+        <h2 data-aos="fade-up" data-aos-delay="100">PLAN. LAUNCH.</h2>
+        <p data-aos="fade-up" data-aos-delay="200">We are team of Wedding Decoration</p>
         <div class="d-flex mt-4" data-aos="fade-up" data-aos-delay="300">
-          <a href="#about" class="btn-get-started">Get Started</a>
-          <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox btn-watch-video d-flex align-items-center"><i class="bi bi-play-circle"></i><span>Watch Video</span></a>
+          <a href="{{ route('pelanggan.pesanan') }}" class="btn-get-started">Pesan Sekarang</a>
+          {{-- <a href="https://youtube.com/shorts/YfOudWrZk6A?si=_YZtAsg8VpK_BAn-" class="glightbox btn-watch-video d-flex align-items-center"><i class="bi bi-play-circle"></i><span>Watch Video</span></a> --}}
         </div>
       </div>
 
     </section><!-- /Hero Section -->
 
     <!-- About Section -->
-    <section id="about" class="about section">
+    <section id="tentangkami" class="about section">
 
       <div class="container">
 
-        <div class="row gy-4">
-          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-            <h3>Voluptatem dignissimos provident laboris nisi ut aliquip ex ea commodo</h3>
-            <img src="{{ asset('Dewi-1.0.0/assets/img/about.jpg')}}" class="img-fluid rounded-4 mb-4" alt="">
-            <p>Ut fugiat ut sunt quia veniam. Voluptate perferendis perspiciatis quod nisi et. Placeat debitis quia recusandae odit et consequatur voluptatem. Dignissimos pariatur consectetur fugiat voluptas ea.</p>
-            <p>Temporibus nihil enim deserunt sed ea. Provident sit expedita aut cupiditate nihil vitae quo officia vel. Blanditiis eligendi possimus et in cum. Quidem eos ut sint rem veniam qui. Ut ut repellendus nobis tempore doloribus debitis explicabo similique sit. Accusantium sed ut omnis beatae neque deleniti repellendus.</p>
+        <!-- Section Title -->
+        <div class="row mb-3" data-aos="fade-up" data-aos-delay="100">
+          <div class="col-12 text-center">
+            <h2 style="font-size: 2.5rem; font-weight: bold;">
+              {{ $aboutUs->title ?? 'About Us' }}
+            </h2>
           </div>
+        </div>
+        
+        <!-- Content Row -->
+        <div class="row gy-4 align-items-center justify-content-center">
+
+          <div class="col-lg-3 text-center" data-aos="fade-up" data-aos-delay="100">
+            @if($aboutUs && $aboutUs->image)
+              <img src="{{ asset('storage/' . $aboutUs->image) }}"
+                  class="img-fluid rounded-4 mb-4"
+                  alt="About Us">
+            @else
+              <img src="{{ asset('Dewi-1.0.0/assets/img/about.jpg') }}"
+                  class="img-fluid rounded-4 mb-4"
+                  alt="">
+            @endif
+          </div>
+
           <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
             <div class="content ps-0 ps-lg-5">
-              <p class="fst-italic">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                magna aliqua.
-              </p>
-              <ul>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-              </ul>
-              <p>
-                Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident
+              <p class="fst-italic text-center text-lg-start">
+                Kami adalah mitra terpercaya Anda dalam mewujudkan acara spesial yang tak terlupakan.
               </p>
 
-              <div class="position-relative mt-4">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/about-2.jpg')}}" class="img-fluid rounded-4" alt="">
-                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
-              </div>
+              <ul class="list-unstyled text-center text-lg-start">
+                <li><i class="bi bi-check-circle-fill"></i> Layanan dekorasi berkualitas tinggi</li>
+                <li><i class="bi bi-check-circle-fill"></i> Tim profesional dan berpengalaman</li>
+                <li><i class="bi bi-check-circle-fill"></i> Desain kreatif sesuai keinginan Anda</li>
+              </ul>
+
+              <p class="text-center text-lg-start">
+                Dengan pengalaman bertahun-tahun, kami siap mengubah impian Anda menjadi kenyataan yang memukau.
+              </p>
+
+              <p class="text-center text-lg-start">
+                {!! $aboutUs->description ?? 'Deskripsi tentang kami akan ditampilkan di sini.' !!}
+              </p>
             </div>
           </div>
         </div>
@@ -148,122 +176,57 @@
 
     </section><!-- /About Section -->
 
-    <!-- Stats Section -->
-    <section id="stats" class="stats section light-background">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row gy-4">
-
-          <div class="col-lg-3 col-md-6">
-            <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-emoji-smile color-blue flex-shrink-0"></i>
-              <div>
-                <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Happy Clients</p>
-              </div>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-md-6">
-            <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-journal-richtext color-orange flex-shrink-0"></i>
-              <div>
-                <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Projects</p>
-              </div>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-md-6">
-            <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-headset color-green flex-shrink-0"></i>
-              <div>
-                <span data-purecounter-start="0" data-purecounter-end="1463" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Hours Of Support</p>
-              </div>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-md-6">
-            <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-people color-pink flex-shrink-0"></i>
-              <div>
-                <span data-purecounter-start="0" data-purecounter-end="15" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Hard Workers</p>
-              </div>
-            </div>
-          </div><!-- End Stats Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Stats Section -->
-
-    <!-- Services Section -->
-    <section id="services" class="services section">
+    <!-- Packages Section -->
+    <section id="paket" class="services section light-background">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Services</h2>
-        <p>Featured Srvices<br></p>
+        <h2>Paket</h2>
+        <p>Pilihan Paket<br></p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
         <div class="row gy-5">
 
+          @forelse($packages as $package)
           <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="200">
             <div class="service-item">
-              <div class="img">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/services-1.jpg') }}" class="img-fluid" alt="">
+              <div class="img" style="width: 100%; height: 300px; overflow: hidden;">
+                <img src="{{ asset('storage/' . $package->image) }}" class="img-fluid" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
               </div>
               <div class="details position-relative">
                 <div class="icon">
-                  <i class="bi bi-activity"></i>
+                  <i class="bi bi-gift"></i>
                 </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Nesciunt Mete</h3>
+                <a href="#" class="stretched-link" onclick="openPackageModal({{ $package->id }}); return false;">
+                  <h3 style="font-weight: bold; color: #000000;">{{ $package->name }}</h3>
                 </a>
-                <p>Provident nihil minus qui consequatur non omnis maiores. Eos accusantium minus dolores iure perferendis.</p>
+                <p class="price" style="font-weight: bold; color: #d43f8d; margin-top: 10px;">Rp {{ number_format($package->price, 0, ',', '.') }}</p>
               </div>
             </div>
           </div><!-- End Service Item -->
+          @empty
+          <div class="col-12 text-center">
+            <p>No packages available</p>
+          </div>
+          @endforelse
 
-          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="300">
-            <div class="service-item">
-              <div class="img">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/services-2.jpg') }}" class="img-fluid" alt="">
-              </div>
-              <div class="details position-relative">
-                <div class="icon">
-                  <i class="bi bi-broadcast"></i>
-                </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Eosle Commodi</h3>
-                </a>
-                <p>Ut autem aut autem non a. Sint sint sit facilis nam iusto sint. Libero corrupti neque eum hic non ut nesciunt dolorem.</p>
-              </div>
+          <!-- Package Modal Data (Hidden) -->
+          @foreach($packages as $package)
+          <div id="packageModal{{ $package->id }}" style="display: none;">
+            <div class="package-name fw-bold text-dark">{{ $package->name }}</div>
+            <div class="package-image">{{ asset('storage/' . $package->image) }}</div>
+            <div class="package-price">{{ number_format($package->price, 0, ',', '.') }}</div>
+            <div class="package-services">
+              @forelse($package->services as $service)
+                <div class="service-item">{{ $service->name }} - Rp {{ number_format($service->pivot->value_price ?? $service->harga_layanan, 0, ',', '.') }}</div>
+              @empty
+                <div class="service-item">Tidak ada layanan</div>
+              @endforelse
             </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="400">
-            <div class="service-item">
-              <div class="img">
-                <img src="{{ asset(' ') }}/assets/img/services-3.jpg" class="img-fluid" alt="">
-              </div>
-              <div class="details position-relative">
-                <div class="icon">
-                  <i class="bi bi-easel"></i>
-                </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Ledo Markt</h3>
-                </a>
-                <p>Ut excepturi voluptatem nisi sed. Quidem fuga consequatur. Minus ea aut. Vel qui id voluptas adipisci eos earum corrupti.</p>
-              </div>
-            </div>
-          </div><!-- End Service Item -->
+          </div>
+          @endforeach
 
         </div>
 
@@ -271,188 +234,8 @@
 
     </section><!-- /Services Section -->
 
-    <!-- Clients Section -->
-    <section id="clients" class="clients section light-background">
-
-      <div class="container" data-aos="fade-up">
-
-        <div class="row gy-4">
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="{{ asset('Dewi-1.0.0/assets/img/clients/client-1.png') }}" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="{{ asset('Dewi-1.0.0/assets/img/clients/client-2.png') }}" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="{{ asset('Dewi-1.0.0/assets/img/clients/client-3.png') }}" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="{{ asset('Dewi-1.0.0/assets/img/clients/client-4.png') }}" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="{{ asset('Dewi-1.0.0/assets/img/clients/client-5.png') }}" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="{{ asset('Dewi-1.0.0/assets/img/clients/client-6.png') }}" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Clients Section -->
-
-    <!-- Features Section -->
-    <section id="features" class="features section">
-
-      <div class="container">
-
-        <ul class="nav nav-tabs row  d-flex" data-aos="fade-up" data-aos-delay="100">
-          <li class="nav-item col-3">
-            <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#features-tab-1">
-              <i class="bi bi-binoculars"></i>
-              <h4 class="d-none d-lg-block">Modi sit est dela pireda nest</h4>
-            </a>
-          </li>
-          <li class="nav-item col-3">
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-2">
-              <i class="bi bi-box-seam"></i>
-              <h4 class="d-none d-lg-block">Unde praesenti mara setra le</h4>
-            </a>
-          </li>
-          <li class="nav-item col-3">
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-3">
-              <i class="bi bi-brightness-high"></i>
-              <h4 class="d-none d-lg-block">Pariatur explica nitro dela</h4>
-            </a>
-          </li>
-          <li class="nav-item col-3">
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-4">
-              <i class="bi bi-command"></i>
-              <h4 class="d-none d-lg-block">Nostrum qui dile node</h4>
-            </a>
-          </li>
-        </ul><!-- End Tab Nav -->
-
-        <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
-
-          <div class="tab-pane fade active show" id="features-tab-1">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Voluptatem dignissimos provident quasi corporis voluptates sit assumenda.</h3>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i>
-                    <spab>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</spab>
-                  </li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit</span>.</li>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-                </ul>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/working-1.jpg') }}" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-          <div class="tab-pane fade" id="features-tab-2">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Neque exercitationem debitis soluta quos debitis quo mollitia officia est</h3>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Provident mollitia neque rerum asperiores dolores quos qui a. Ipsum neque dolor voluptate nisi sed.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-                </ul>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/working-2.jpg') }}" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-          <div class="tab-pane fade" id="features-tab-3">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Voluptatibus commodi ut accusamus ea repudiandae ut autem dolor ut assumenda</h3>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Provident mollitia neque rerum asperiores dolores quos qui a. Ipsum neque dolor voluptate nisi sed.</span></li>
-                </ul>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/working-3.jpg') }}" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-          <div class="tab-pane fade" id="features-tab-4">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Omnis fugiat ea explicabo sunt dolorum asperiores sequi inventore rerum</h3>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-                </ul>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/working-4.jpg') }}" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Features Section -->
-
-    <!-- Services 2 Section -->
-    <section id="services-2" class="services-2 section light-background">
+    <!-- Services Section -->
+    <section id="layanan" class="services-2 section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
@@ -462,189 +245,91 @@
 
       <div class="container">
 
-        <div class="row gy-4">
+        <div class="row gy-4" id="servicesContainer">
 
-          <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="service-item d-flex position-relative h-100">
-              <i class="bi bi-briefcase icon flex-shrink-0"></i>
+          @forelse($services as $service)
+          <div class="col-md-6 service-item-wrapper" data-service-index="{{ $loop->index }}" style="{{ $loop->index >= 10 ? 'display: none;' : '' }}">
               <div>
-                <h4 class="title"><a href="#" class="stretched-link">Lorem Ipsum</a></h4>
-                <p class="description">Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident</p>
+                <h4 class="title stretched-link">{{ $service->name }}</h4>
               </div>
-            </div>
+            
           </div><!-- End Service Item -->
+          @empty
+          <div class="col-12 text-center">
+            <p>No services available</p>
+          </div>
+          @endforelse
 
-          <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="service-item d-flex position-relative h-100">
-              <i class="bi bi-card-checklist icon flex-shrink-0"></i>
-              <div>
-                <h4 class="title"><a href="#" class="stretched-link">Dolor Sitema</a></h4>
-                <p class="description">Minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat tarad limino ata</p>
-              </div>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="service-item d-flex position-relative h-100">
-              <i class="bi bi-bar-chart icon flex-shrink-0"></i>
-              <div>
-                <h4 class="title"><a href="#" class="stretched-link">Sed ut perspiciatis</a></h4>
-                <p class="description">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur</p>
-              </div>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item d-flex position-relative h-100">
-              <i class="bi bi-binoculars icon flex-shrink-0"></i>
-              <div>
-                <h4 class="title"><a href="#" class="stretched-link">Magni Dolores</a></h4>
-                <p class="description">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
-              </div>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-md-6" data-aos="fade-up" data-aos-delay="500">
-            <div class="service-item d-flex position-relative h-100">
-              <i class="bi bi-brightness-high icon flex-shrink-0"></i>
-              <div>
-                <h4 class="title"><a href="#" class="stretched-link">Nemo Enim</a></h4>
-                <p class="description">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque</p>
-              </div>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-md-6" data-aos="fade-up" data-aos-delay="600">
-            <div class="service-item d-flex position-relative h-100">
-              <i class="bi bi-calendar4-week icon flex-shrink-0"></i>
-              <div>
-                <h4 class="title"><a href="#" class="stretched-link">Eiusmod Tempor</a></h4>
-                <p class="description">Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi</p>
-              </div>
-            </div>
-          </div><!-- End Service Item -->
+          @if($services->count() > 10)
+          <div class="col-12 text-center" style="margin-top: 30px;" id="showMoreBtn">
+            <button onclick="toggleServices()" style="background: none; border: none; display: inline-flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; color: #e68900; font-weight: bold; font-size: 16px; padding: 0;">
+              <span id="btnText">Lihat Selengkapnya</span>
+              <i class="bi bi-chevron-down" id="chevronIcon" style="font-size: 24px; animation: bounce 2s infinite; transition: transform 0.3s;"></i>
+            </button>
+          </div>
+          @endif
 
         </div>
 
       </div>
+
+      <style>
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(10px); }
+        }
+
+        .service-item-wrapper .title a {
+          color: #000000 !important;
+          transition: color 0.3s ease;
+        }
+
+        .service-item-wrapper .title a:hover {
+          color: #e68900 !important;
+        }
+      </style>
+
+      <script>
+        function toggleServices() {
+          const container = document.getElementById('servicesContainer');
+          const items = container.querySelectorAll('.service-item-wrapper');
+          const chevron = document.getElementById('chevronIcon');
+          const btnText = document.getElementById('btnText');
+          let allVisible = false;
+
+          items.forEach((item, index) => {
+            if (index >= 4) {
+              if (item.style.display === 'none') {
+                item.style.display = '';
+                allVisible = true;
+              } else {
+                item.style.display = 'none';
+              }
+            }
+          });
+
+          // Update button text and chevron direction
+          if (allVisible) {
+            btnText.textContent = 'Sembunyikan';
+            chevron.style.transform = 'rotate(180deg)';
+            chevron.style.animation = 'none';
+          } else {
+            btnText.textContent = 'Lihat Selengkapnya';
+            chevron.style.transform = 'rotate(0deg)';
+            chevron.style.animation = 'bounce 2s infinite';
+          }
+        }
+      </script>
 
     </section><!-- /Services 2 Section -->
 
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="testimonials section dark-background">
-
-      <img src="{{ asset('Dewi-1.0.0/assets/img/testimonials-bg.jpg') }}" class="testimonials-bg" alt="">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="swiper init-swiper">
-          <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "speed": 600,
-              "autoplay": {
-                "delay": 5000
-              },
-              "slidesPerView": "auto",
-              "pagination": {
-                "el": ".swiper-pagination",
-                "type": "bullets",
-                "clickable": true
-              }
-            }
-          </script>
-          <div class="swiper-wrapper">
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/testimonials/testimonials-1.jpg') }}" class="testimonial-img" alt="">
-                <h3>Saul Goodman</h3>
-                <h4>Ceo &amp; Founder</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/testimonials/testimonials-2.jpg') }}" class="testimonial-img" alt="">
-                <h3>Sara Wilsson</h3>
-                <h4>Designer</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/testimonials/testimonials-3.jpg') }}" class="testimonial-img" alt="">
-                <h3>Jena Karlis</h3>
-                <h4>Store Owner</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/testimonials/testimonials-4.jpg') }}" class="testimonial-img" alt="">
-                <h3>Matt Brandon</h3>
-                <h4>Freelancer</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/testimonials/testimonials-5.jpg') }}" class="testimonial-img" alt="">
-                <h3>John Larson</h3>
-                <h4>Entrepreneur</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-
-    </section><!-- /Testimonials Section -->
+    {{-- <!-- Orders Section -->
+    <section id="pesanan">
+      @livewire('pelanggan.orders')
+    </section> --}}
 
     <!-- Portfolio Section -->
-    <section id="portfolio" class="portfolio section">
+    <section id="portfolio" class="portfolio section light-background">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
@@ -656,159 +341,34 @@
 
         <div class="isotope-layout" data-default-filter="*" data-layout="masonry" data-sort="original-order">
 
-          <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="100">
-            <li data-filter="*" class="filter-active">All</li>
-            <li data-filter=".filter-app">App</li>
-            <li data-filter=".filter-product">Product</li>
-            <li data-filter=".filter-branding">Branding</li>
-            <li data-filter=".filter-books">Books</li>
-          </ul><!-- End Portfolio Filters -->
-
           <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/app-1.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>App 1</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/app-1.jpg') }}" title="App 1" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
+            @forelse($portfolios as $portfolio)
+              @if($portfolio->images && is_array($portfolio->images))
+                @foreach($portfolio->images as $image)
+                  <div class="col-lg-4 col-md-6 portfolio-item isotope-item">
+                    <div class="portfolio-content h-100">
+                      <img src="{{ asset('storage/' . $image) }}" class="img-fluid" alt="Portfolio Image">
+                      <div class="portfolio-info">
+                        <h4>Portfolio</h4>
+                        <p>Karya Dekorasi Kami</p>
+                        <a href="{{ asset('storage/' . $image) }}" title="Portfolio" data-gallery="portfolio-gallery" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
+                      </div>
+                    </div>
+                  </div><!-- End Portfolio Item -->
+                @endforeach
+              @endif
+            @empty
+              <div class="col-lg-4 col-md-6 portfolio-item isotope-item">
+                <div class="portfolio-content h-100">
+                  <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/app-1.jpg') }}" class="img-fluid" alt="">
+                  <div class="portfolio-info">
+                    <h4>Portfolio Kosong</h4>
+                    <p>Belum ada portfolio yang ditambahkan</p>
+                  </div>
                 </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/product-1.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Product 1</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/product-1.jpg') }}" title="Product 1" data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/branding-1.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Branding 1</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/branding-1.jpg') }}" title="Branding 1" data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/books-1.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Books 1</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/books-1.jpg') }}" title="Branding 1" data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/app-2.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>App 2</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/app-2.jpg') }}" title="App 2" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/product-2.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Product 2</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/product-2.jpg') }}" title="Product 2" data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/branding-2.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Branding 2</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/branding-2.jpg') }}" title="Branding 2" data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/books-2.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Books 2</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/books-2.jpg') }}" title="Branding 2" data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/app-3.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>App 3</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/app-3.jpg') }}" title="App 3" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/product-3.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Product 3</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/product-3.jpg') }}" title="Product 3" data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/branding-3.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Branding 3</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/branding-3.jpg') }}" title="Branding 2" data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
-              <div class="portfolio-content h-100">
-                <img src="{{ asset('Dewi-1.0.0/assets/img/portfolio/books-3.jpg') }}" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Books 3</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="{{ asset('Dewi-1.0.0/assets/img/portfolio/books-3.jpg') }}" title="Branding 3" data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
+              </div><!-- End Portfolio Item -->
+            @endforelse
 
           </div><!-- End Portfolio Container -->
 
@@ -818,80 +378,13 @@
 
     </section><!-- /Portfolio Section -->
 
-    <!-- Team Section -->
-    <section id="team" class="team section light-background">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Team</h2>
-        <p>CHECK OUR TEAM</p>
-      </div><!-- End Section Title -->
-
-      <div class="container">
-
-        <div class="row gy-5">
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="member">
-              <div class="pic"><img src="{{ asset('Dewi-1.0.0/assets/img/team/team-1.jpg') }}" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Walter White</h4>
-                <span>Chief Executive Officer</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="member">
-              <div class="pic"><img src="{{ asset('Dewi-1.0.0/assets/img/team/team-2.jpg') }}" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Sarah Jhonson</h4>
-                <span>Product Manager</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="member">
-              <div class="pic"><img src="{{ asset('Dewi-1.0.0/assets/img/team/team-3.jpg') }}" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>William Anderson</h4>
-                <span>CTO</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Team Section -->
-
     <!-- Contact Section -->
-    <section id="contact" class="contact section">
+    <section id="kontak" class="contact section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Contact</h2>
-        <p>Necessitatibus eius consequatur</p>
+        <p>{{ $contactUs->subtitle ?? 'Hubungi Kami' }}</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -903,24 +396,24 @@
               <div class="col-lg-12">
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200">
                   <i class="bi bi-geo-alt"></i>
-                  <h3>Address</h3>
-                  <p>A108 Adam Street, New York, NY 535022</p>
+                  <h3>Alamat</h3>
+                  <p>{{ $contactUs->alamat}}</p>
                 </div>
               </div><!-- End Info Item -->
 
               <div class="col-md-6">
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="300">
                   <i class="bi bi-telephone"></i>
-                  <h3>Call Us</h3>
-                  <p>+1 5589 55488 55</p>
+                  <h3>Telepon</h3>
+                  <p>{{ $contactUs->nomor_hp ?? '08117411190' }}</p>
                 </div>
               </div><!-- End Info Item -->
 
               <div class="col-md-6">
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="400">
                   <i class="bi bi-envelope"></i>
-                  <h3>Email Us</h3>
-                  <p>info@example.com</p>
+                  <h3>Email</h3>
+                  <p>{{ $contactUs->email ?? 'nakkawindecoration18@gmail.com' }}</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -928,36 +421,19 @@
           </div>
 
           <div class="col-lg-6">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="500">
-              <div class="row gy-4">
-
-                <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
-                </div>
-
-                <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <textarea class="form-control" name="message" rows="4" placeholder="Message" required=""></textarea>
-                </div>
-
-                <div class="col-md-12 text-center">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                  <button type="submit">Send Message</button>
-                </div>
-
-              </div>
-            </form>
-          </div><!-- End Contact Form -->
+            <iframe 
+              src="{{ $contactUs->map_url 
+                ?? 'https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3988.2053863622114!2d103.660432!3d-1.629236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwMzcnNDUuMyJTIDEwM8KwMzknMzcuNiJF!5e0!3m2!1sen!2sid!4v1766817015216!5m2!1sen!2sid' }}"
+              style="border:0; width: 100%; height: 370px;"
+              frameborder="0"
+              allowfullscreen
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              data-aos="fade-up"
+              data-aos-delay="500">
+            </iframe>
+          </div>
+          <!-- End Contact Map -->
 
         </div>
 
@@ -972,61 +448,54 @@
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-4 col-md-6 footer-about">
-          <a href="index.html" class="logo d-flex align-items-center">
+          <a href="{{ '/' }}" class="logo d-flex align-items-center">
             <span class="sitename">Dewi</span>
           </a>
           <div class="footer-contact pt-3">
-            <p>A108 Adam Street</p>
-            <p>New York, NY 535022</p>
-            <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-            <p><strong>Email:</strong> <span>info@example.com</span></p>
-          </div>
-          <div class="social-links d-flex mt-4">
-            <a href=""><i class="bi bi-twitter-x"></i></a>
-            <a href=""><i class="bi bi-facebook"></i></a>
-            <a href=""><i class="bi bi-instagram"></i></a>
-            <a href=""><i class="bi bi-linkedin"></i></a>
+            <p>{{ $contactUs->alamat}}</p>
+            <p><strong>Telepon:</strong> <span>{{ $contactUs->nomor_hp ?? '08117411190' }}</span></p>
+            <p><strong>Email:</strong> <span>{{ $contactUs->email ?? 'nakkawindecoration18@gmail.com' }}</span></p>
           </div>
         </div>
 
         <div class="col-lg-2 col-md-3 footer-links">
-          <h4>Useful Links</h4>
+          <h4>Menu</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#beranda">Home</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#tentangkami">Tentang Kami</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">Paket</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#layanan">Layanan</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#portfolio">Portofolio</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#kontak">Kontak</a></li>
           </ul>
         </div>
 
         <div class="col-lg-2 col-md-3 footer-links">
-          <h4>Our Services</h4>
+          <h4>Paket Kami</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">Standar</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">Pre-Wedding Indoor</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">Pre-Wedding Outdoor</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">WO Only</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">WO All-In</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">Intimate Wedding</a></li>
           </ul>
         </div>
 
         <div class="col-lg-4 col-md-12 footer-newsletter">
-          <h4>Our Newsletter</h4>
-          <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
-          <form action="forms/newsletter.php" method="post" class="php-email-form">
-            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
-            <div class="loading">Loading</div>
-            <div class="error-message"></div>
-            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
-          </form>
+          <h4>Social Media</h4>
+           <div class="social-links d-flex mt-4">
+            <a href="https://www.facebook.com/puput.buffing/" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com/nakkawin_decoration/" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://wa.me/6282372070011" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i></a>
+          </div>
         </div>
 
       </div>
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Dewi</strong> <span>All Rights Reserved</span></p>
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">Chori Erola</strong>
       <div class="credits">
         <!-- All the links in the footer should remain intact. -->
         <!-- You can delete the links only if you've purchased the pro version. -->
@@ -1056,6 +525,383 @@
 
   <!-- Main JS File -->
   <script src="{{ asset('Dewi-1.0.0/assets/js/main.js') }}"></script>
+
+  <!-- Package Modal HTML -->
+  <div id="packageModalOverlay" class="package-modal-overlay" onclick="closePackageModal()"></div>
+  <div id="packageModalContent" class="package-modal-content">
+    <button class="package-modal-close" onclick="closePackageModal()">
+      <i class="bi bi-x"></i>
+    </button>
+    <div class="package-modal-body">
+      <img id="modalPackageImage" src="" alt="Package Image" class="modal-package-image">
+      <h2 id="modalPackageName">Package Name</h2>
+      <div class="modal-package-details">
+        <div class="detail-section">
+          <h4>Harga Paket</h4>
+          <p id="modalPackagePrice" style="font-weight: bold; color: #d43f8d; font-size: 18px;">Rp 0</p>
+        </div>
+        <div class="detail-section">
+          <h4>Layanan Included</h4>
+          <ul id="modalPackageServices" style="text-align: left;">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Swiper Slider Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const heroSwiper = new Swiper('.hero-swiper', {
+        loop: true,
+        speed: 600,
+        autoplay: {
+          delay: 4000,
+          disableOnInteraction: false,
+        },
+        effect: 'fade',
+        fadeEffect: {
+          crossFade: true
+        }
+      });
+    });
+  </script>
+
+  <!-- Hero Section Styles -->
+  <style>
+    .hero .swiper-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .hero .swiper-slide {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+
+    .hero .hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 2;
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 3;
+    }
+
+    /* Package Modal Styles */
+    .package-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+      cursor: pointer;
+    }
+
+    .package-modal-overlay.active {
+      display: block;
+    }
+
+    .package-modal-content {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .package-modal-content.active {
+      display: block;
+    }
+
+    .package-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #333;
+      cursor: pointer;
+      z-index: 1001;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .package-modal-close:hover {
+      color: #d43f8d;
+    }
+
+    .package-modal-body {
+      padding: 30px;
+      text-align: center;
+    }
+
+    .modal-package-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .package-modal-body h2 {
+      color: #000;
+      margin: 20px 0;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .modal-package-details {
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    .detail-section {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .detail-section h4 {
+      color: #333;
+      margin: 0 0 10px 0;
+      font-weight: bold;
+    }
+
+    .detail-section p {
+      margin: 0;
+      color: #666;
+    }
+
+    .detail-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .detail-section li {
+      padding: 8px 0;
+      border-bottom: 1px solid #e0e0e0;
+      color: #666;
+    }
+
+    .detail-section li:last-child {
+      border-bottom: none;
+    }
+
+    @media (max-width: 768px) {
+      .package-modal-content {
+        width: 95%;
+        max-width: none;
+      }
+
+      .package-modal-body {
+        padding: 20px;
+      }
+
+      .modal-package-image {
+        height: 200px;
+      }
+
+      .package-modal-body h2 {
+        font-size: 22px;
+        font-weight: bold;
+      }
+    }
+  </style>
+
+  <script>
+    function openPackageModal(packageId) {
+      const modal = document.getElementById('packageModalOverlay');
+      const modalContent = document.getElementById('packageModalContent');
+      const hiddenData = document.getElementById('packageModal' + packageId);
+
+      if (hiddenData) {
+        // Get data from hidden div
+        const packageName = hiddenData.querySelector('.package-name').textContent;
+        const packageImage = hiddenData.querySelector('.package-image').textContent;
+        const packagePrice = hiddenData.querySelector('.package-price').textContent;
+        const servicesHTML = hiddenData.querySelector('.package-services').innerHTML;
+
+        // Update modal content
+        document.getElementById('modalPackageName').textContent = packageName;
+        document.getElementById('modalPackageImage').src = packageImage;
+        document.getElementById('modalPackagePrice').textContent = 'Rp ' + packagePrice;
+        
+        // Clear and populate services
+        const servicesList = document.getElementById('modalPackageServices');
+        servicesList.innerHTML = '';
+        const servicesDiv = hiddenData.querySelector('.package-services');
+        servicesDiv.querySelectorAll('.service-item').forEach(service => {
+          const li = document.createElement('li');
+          li.textContent = service.textContent;
+          servicesList.appendChild(li);
+        });
+
+        // Show modal
+        modal.classList.add('active');
+        modalContent.classList.add('active');
+      }
+    }
+
+    function closePackageModal() {
+      const modal = document.getElementById('packageModalOverlay');
+      const modalContent = document.getElementById('packageModalContent');
+      modal.classList.remove('active');
+      modalContent.classList.remove('active');
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('packageModalOverlay');
+      if (event.target === modal) {
+        closePackageModal();
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closePackageModal();
+      }
+    });
+
+    // Profile Dropdown Toggle
+    function toggleProfileDropdown() {
+      const menu = document.getElementById('profileMenu');
+      menu.classList.toggle('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const profileBtn = document.getElementById('profileBtn');
+      const profileMenu = document.getElementById('profileMenu');
+      
+      if (!profileBtn.contains(event.target) && !profileMenu.contains(event.target)) {
+        profileMenu.classList.remove('show');
+      }
+    });
+  </script>
+
+  <!-- Profile Dropdown Styles -->
+  <style>
+    .profile-dropdown {
+      margin-left: 1rem;
+    }
+
+    .profile-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: white;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.3s ease;
+    }
+
+    .profile-btn:hover {
+      color: #ff9800;
+    }
+
+    .profile-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      min-width: 200px;
+      margin-top: 10px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .profile-menu.show {
+      display: block;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      color: #333;
+      text-decoration: none;
+      transition: background-color 0.2s ease;
+      gap: 10px;
+    }
+
+    .dropdown-item:hover {
+      background-color: #f5f5f5;
+      color: #ff9800;
+    }
+
+    .dropdown-item i {
+      font-size: 16px;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background-color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
 
 </body>
 

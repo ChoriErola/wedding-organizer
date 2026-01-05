@@ -29,7 +29,7 @@ class ListOrders extends ListRecords
                 ->modal() // open as modal (no custom form reference)
                 ->modalSubmitAction(false) // karena ini hanya view
                 ->modalCancelActionLabel('Tutup'),
-
+            
             EditAction::make(),
         ];
     }

@@ -3,24 +3,23 @@
 namespace App\Filament\Resources\Orders\Pages;
 
 use App\Filament\Resources\Orders\OrderResource;
-use App\Models\Order;
-use App\Models\Package;
-use App\Models\Services;
 use App\Filament\Resources\Orders\Schemas\EditOrderForm;
+use App\Models\Order;
+use App\Models\Services;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class EditOrder extends EditRecord
 {
-    protected ?array $temporary_selected_service_ids = null;
-    protected ?array $temporary_optional_service_ids = null;
-
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
     }
-    
+
     protected static string $resource = OrderResource::class;
 
     public function form(Schema $schema): Schema
@@ -32,143 +31,134 @@ class EditOrder extends EditRecord
     {
         return [
             DeleteAction::make(),
+            Action::make('approve_payment')
+                ->label('Konfirmasi Pembayaran')
+                ->color('success')
+                ->icon('heroicon-o-check-circle')
+                ->visible(fn ($record) => $record->status === 'paid in progress')
+                ->requiresConfirmation()
+                ->action(function ($record) {
+                    $record->update([
+                        'status' => 'paid completed',
+                        'payment_approved_by' => Auth::id(),
+                        'payment_approved_at' => now(),
+                    ]);
+                })
+                ->after(fn () => redirect($this->getResource()::getUrl('index'))),
+            Action::make('reject_payment')
+                ->label('Tolak Pembayaran')
+                ->color('danger')
+                ->icon('heroicon-o-x-circle')
+                ->form([
+                    Textarea::make('payment_note')
+                        ->label('Alasan Penolakan')
+                        ->required(),
+                ])
+                ->visible(fn ($record) => $record->status === 'paid in progress')
+                ->action(function ($record, $data) {
+                    $record->update([
+                        'status' => 'paid in progress',
+                        'payment_note' => $data['payment_note'],
+                    ]);
+                })
+                ->after(fn () => redirect($this->getResource()::getUrl('index'))),
         ];
+
     }
 
-    protected function prepareFormData(array $data): array
-    {
-        // Pastikan selected_service_ids adalah array
-        if (isset($data['selected_service_ids']) && !is_array($data['selected_service_ids'])) {
-            $data['selected_service_ids'] = [];
-        }
-        
-        return $data;
-    }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $this->temporary_selected_service_ids = $data['selected_service_ids'] ?? null;
-        $this->temporary_optional_service_ids = $data['optional_service_ids'] ?? null;
-        // Remove UI-only fields before saving
-        unset(
-            $data['selected_service_ids'], 
-            $data['optional_service_ids'], 
-            $data['package_services_list'], 
-            $data['optional_services_list'], 
-            $data['package_price'], 
-            $data['package_services_display'], 
-            $data['optional_services_display']);
-        return $data;
-    }
-    
+    /**
+     * Menyiapkan data sebelum ditampilkan di form Edit
+     */
     protected function mutateFormDataToFill(array $data): array
     {
         $order = $this->record;
-        if (empty($data['package_id']) && ! empty($order->package_id)) {
-            $data['package_id'] = $order->package_id;
-        }
         
-        // Semua service IDs (paket + optional) masuk ke selected_service_ids
-        $savedServiceIds = $order->services()
-            ->pluck('service_id')
-            ->map(fn ($id) => (string) $id) 
-            ->toArray();
-
-        // Identifikasi optional service IDs (adalah services dengan is_required=false dan package_id=null)
-        $optionalIds = $order->services()
-            ->where('is_required', false)
-            ->whereNull('package_id')
+        $allServiceIds = $order->services()
+            ->where(function ($query) {
+                $query->where('is_required', true)
+                      ->orWhere('is_custom', true);
+            })
             ->pluck('service_id')
             ->map(fn ($id) => (string) $id)
             ->toArray();
-
-        $data['selected_service_ids'] = $savedServiceIds;
-        $data['optional_service_ids'] = $optionalIds;
-
-        $data['base_price'] = $order->base_price;
-        $data['total_price'] = $order->total_price;
         
-        if ($order->package) {
-            $data['package_price'] = $order->package->price;
-        }
-
+        $data['all_service_ids'] = $allServiceIds;
+        
         return $data;
     }
 
-    protected function afterSave(): void
+    /**
+     * Membersihkan data "palsu" sebelum disimpan ke database tabel Orders
+     */
+    protected function mutateFormDataBeforeSave(array $data): array
     {
-        $state = $this->form->getState();
-        if ($this->temporary_selected_service_ids !== null) {
-        $state['selected_service_ids'] = $this->temporary_selected_service_ids;
-        }
-        if ($this->temporary_optional_service_ids !== null) {
-            $state['optional_service_ids'] = $this->temporary_optional_service_ids;
-        }
-
-        $this->temporary_selected_service_ids = null;
-        $this->temporary_optional_service_ids = null;
-
-        $this->syncServices($this->record, $state);
+        unset(
+            $data['all_service_ids'],
+            $data['package_price']
+        );
+        return $data;
     }
 
-    protected function syncServices(Order $order, array $state): void
+    /**
+     * Logika yang dijalankan SETELAH data utama Order berhasil diupdate
+     */
+    protected function afterSave(): void
     {
-        $packageId = $order->package_id;
-        $order->services()->delete();
+        // $order = $this->record;
+        $state = $this->form->getState();
         
-        // Saat edit, semua services ada di selected_service_ids
-        $selectedIds = $state['selected_service_ids'] ?? [];
-        
-        $masterPackageServiceIds = [];
-        $package = null;
-        
-        if ($packageId) {
-            $package = Package::find($packageId);
-            if ($package) {
-                $masterPackageServiceIds = $package->services->pluck('id')->toArray();
-            }
+        // Jalankan sinkronisasi tabel pivot
+        if (
+            array_key_exists('selected_service_ids', $state) ||
+            array_key_exists('optional_service_ids', $state)
+        ) {
+            $this->syncServices($this->record, $state);
         }
 
-        foreach ($selectedIds as $serviceId) {
-            $serviceMaster = Services::find($serviceId);
-            if (! $serviceMaster) continue;
-            
-            if (in_array($serviceId, $masterPackageServiceIds)) {
-                // Layanan dari master package → simpan sebagai is_required=true
-                $pivotPrice = 0;
-                if ($package) {
-                    $pivotItem = $package->services->where('id', $serviceId)->first();
-                    if ($pivotItem) {
-                        $pivotPrice = (float) ($pivotItem->pivot->value_price ?? 0);
-                        if ($pivotPrice <= 0) {
-                            $pivotPrice = (float) ($serviceMaster->harga_layanan ?? 0);
-                        }
-                    }
-                }
+        // update status otomatis
+        if (
+            ! empty($this->record->bukti_pembayaran) &&
+            $this->record->status === 'confirmed'
+        ) {
+            $this->record->updateQuietly([
+                'status' => 'paid in progress',
+            ]);
+        }
+    }
 
-                $order->services()->create([
-                    'service_id'   => $serviceMaster->id,
-                    'package_id'   => $packageId,
-                    'service_name' => $serviceMaster->name,
-                    'price'        => $pivotPrice,
-                    'is_required'  => true,
-                    'is_custom'    => false,
-                ]);
-            } else {
-                // Layanan optional → simpan sebagai optional
-                $order->services()->create([
-                    'service_id'   => $serviceMaster->id,
-                    'package_id'   => null,
-                    'service_name' => $serviceMaster->name,
-                    'price'        => $serviceMaster->harga_layanan ?? 0,
-                    'is_required'  => false,
-                    'is_custom'    => false,
-                ]);
-            }
+    /**
+     * Fungsi Helper untuk Sinkronisasi Layanan
+     */
+    protected function syncServices(Order $order, array $state): void
+    {
+        if (
+        empty($state['selected_service_ids']) &&
+        empty($state['optional_service_ids'])
+        ) {
+            return; // jangan hapus apa pun
+        }
+        // Hapus data lama dulu agar tidak duplikat saat save berkali-kali
+        $order->services()->delete();
+        
+        $selectedServiceIds = array_unique(array_merge(
+            $state['selected_service_ids'] ?? [],
+            $state['optional_service_ids'] ?? []
+        ));
+
+        if (empty($selectedServiceIds)) return;
+
+        $services = Services::whereIn('id', $selectedServiceIds)->get();
+
+        foreach ($services as $service) {
+            $order->services()->create([
+                'service_id'   => $service->id,
+                'service_name' => $service->name,
+                'price'        => $service->harga_layanan ?? 0,
+            ]);
         }
         
         $order->update([
-            'base_price'  => $state['base_price'] ?? 0,
+            'base_price' => $state['base_price'] ?? 0,
             'total_price' => $state['total_price'] ?? 0,
         ]);
     }

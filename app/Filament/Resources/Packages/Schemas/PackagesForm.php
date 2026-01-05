@@ -48,6 +48,7 @@ class PackagesForm
                         titleAttribute: 'name'
                     )
                     ->label('Pilih Layanan')
+                    ->required()
                     ->columnSpanFull()
                     ->columns(3)
                     ->searchable(),         

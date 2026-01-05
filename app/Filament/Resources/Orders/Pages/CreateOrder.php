@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Pages;
 
 use App\Filament\Resources\Orders\OrderResource;
+use App\Models\Services;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Str;
 
@@ -41,52 +42,28 @@ class CreateOrder extends CreateRecord
         // remove any existing snapshots
         $order->services()->delete();
 
-        $packageId = $order->package_id;
+        // ambil HANYA yang dipilih
+        $selectedServiceIds = array_unique(array_merge(
+            $state['selected_service_ids'] ?? [],
+            $state['optional_service_ids'] ?? []
+        ));
 
-        $selected = $state['selected_service_ids'] ?? [];
-        $optional = $state['optional_service_ids'] ?? [];
+        if (empty($selectedServiceIds)) return;
 
-        // snapshot ALL package services (selected and unselected) to track what was removed
-        if (! empty($packageId)) {
-            $package = \App\Models\Package::find($packageId);
-            if ($package) {
-                foreach ($package->services as $service) {
-                    $isSelected = in_array($service->id, $selected);
-                    $price = (float) ($service->pivot?->value_price ?? $service->harga_layanan ?? 0);
+        $services = Services::whereIn('id', $selectedServiceIds)->get();
 
-                    $order->services()->create([
-                        'service_id' => $service->id,
-                        'package_id' => $packageId,
-                        'service_name' => $service->name,
-                        'price' => $price,
-                        'is_required' => $isSelected ? 1 : 0,
-                        'is_custom' => 0,
-                    ]);
-                }
-            }
+        foreach ($services as $service) {
+            $order->services()->create([
+                'service_id'   => $service->id,
+                'service_name' => $service->name,
+                'price'        => $service->harga_layanan ?? 0,
+            ]);
         }
 
-        // optional global services
-        if (! empty($optional)) {
-            foreach ($optional as $serviceId) {
-                $service = \App\Models\Services::find($serviceId);
-                if (! $service) continue;
-
-                $order->services()->create([
-                    'service_id' => $service->id,
-                    'package_id' => null,
-                    'service_name' => $service->name,
-                    'price' => $service->harga_layanan ?? 0,
-                    'is_required' => false,
-                    'is_custom' => true,
-                ]);
-            }
-        }
-
-        // Use the prices calculated client-side in the form (same as EditOrder)
         $order->update([
             'base_price' => $state['base_price'] ?? 0,
             'total_price' => $state['total_price'] ?? 0,
         ]);
+        
     }
 }

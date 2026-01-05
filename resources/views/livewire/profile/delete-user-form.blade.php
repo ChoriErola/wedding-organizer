@@ -19,6 +19,8 @@ new class extends Component
 
         tap(Auth::user(), $logout(...))->delete();
 
+        $this->dispatch('user-deleted');
+
         $this->redirect('/', navigate: true);
     }
 }; ?>

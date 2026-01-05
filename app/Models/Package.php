@@ -17,9 +17,9 @@ class Package extends Model
     {
         return $this->belongsToMany(
             Services::class,
-            'packages_services', // ✅ NAMA TABEL PIVOT
-            'package_id',        // ✅ FK di pivot ke packages
-            'service_id'         // ✅ FK di pivot ke services
+            'packages_services', 
+            'package_id',        
+            'service_id'        
         )
         ->withPivot(['value_price', 'is_required'])
         ->withTimestamps();

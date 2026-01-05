@@ -27,15 +27,18 @@ class OrderForm
                     ->default(fn () => 'ORD-' . now()->format('Ymd'). '-' . Str::upper(Str::random(6)))
                     ->disabled()
                     ->dehydrated(),
+                TextInput::make('acara')
+                    ->label('Nama Acara')
+                    ->required(),
                 DatePicker::make('event_date')
                     ->label('Tanggal Acara')
                     ->required(),
                 Select::make('status')
                     ->options([
-                        'draft' => 'Draft',
                         'pending' => 'Pending',
                         'confirmed' => 'Confirmed',
-                        'paid' => 'Paid',
+                        'paid in progress' => 'Paid In Progress',
+                        'paid completed' => 'Paid Completed',
                         'completed' => 'Completed',
                         'cancelled' => 'Cancelled',
                     ])
@@ -108,34 +111,42 @@ class OrderForm
                     )
                     ->dehydrated(false),
 
-                // Tampilan view
-                Textarea::make('package_services_display')
-                    ->label('Layanan Paket (Dipilih)')
-                    // ->bulleted()
+                // Tampilan view - Semua Layanan yang telah disimpan
+                Textarea::make('all_services_display')
+                    ->label('Layanan (Dipilih)')
                     ->disabled()
                     ->rows(8)
                     ->dehydrated(false)
                     ->formatStateUsing(function ($record) {
-                        // Jika tidak ada record, tampilkan tanda '-' (misal mode create)
                         if (! $record || ! $record->exists) {
                             return '-';
                         }
-                        // Ambil layanan yang tersimpan pada order (snapshot di order_services)
-                        $services = $record->services()
-                            ->where('is_required', true)
-                            ->pluck('service_name')
-                            ->toArray();
 
-                        return ! empty($services) ? implode("\n", $services) : 'Tidak ada layanan terpilih';
+                        $services = $record->services()->pluck('service_name');
+
+                        return $services->isNotEmpty()
+                            ? $services->implode("\n")
+                            : 'Tidak ada layanan terpilih';
                     })
-                    ->hidden(fn ($livewire) => !(
+                    ->visible(fn ($livewire) => 
                         $livewire instanceof \Filament\Resources\Pages\ViewRecord
                         || $livewire instanceof \Filament\Resources\Pages\ListRecords
-                    ))
+                    )
                     ->columnSpanFull(),
 
+                // tampilkan catatan pembayaran jika ada
+                Textarea::make('payment_note')
+                    ->label('Catatan Pembayaran')
+                    ->disabled()
+                    ->rows(4)
+                    ->dehydrated(false)
+                    ->visible(fn ($livewire) =>
+                        $livewire instanceof \Filament\Resources\Pages\ViewRecord
+                        && filled($livewire->record?->payment_note)
+                    )
+                    ->columnSpanFull(),
                 CheckboxList::make('selected_service_ids')
-                    ->label('Layanan Paket (centang jika ingin dibatalkan ')
+                    ->label('Layanan Paket')
                     ->columns(3)
                     ->options(function ($get) {
                         $packageId = $get('package_id');
@@ -144,7 +155,7 @@ class OrderForm
                         $package = \App\Models\Package::find($packageId);
                         if (! $package) return [];
 
-                        // show only service names
+                        // Show all package services
                         return $package->services->pluck('name', 'id')->toArray();
                     })
                     ->reactive()
@@ -167,7 +178,6 @@ class OrderForm
                         $serviceIds = $get('selected_service_ids') ?? [];
                         $unselectedServices = $package->services->whereNotIn('id', $serviceIds);
 
-                        // FIX: gunakan value_price > 0, jika tidak → fallback harga_layanan
                         $unselectedTotal = $unselectedServices->sum(function ($service) {
                             $pivotPrice = (float) ($service->pivot->value_price ?? 0);
 
@@ -191,35 +201,12 @@ class OrderForm
                         $set('total_price', $basePrice + $optionalTotal);
                     }),
 
-                // Optional services (global list) -- admin can add services outside the package
-                Textarea::make('optional_services_display')
-                    ->label('Layanan Tambahan (Dipilih)')
-                    // ->bulleted()
-                    ->disabled()
-                    ->rows(6)
-                    ->dehydrated(false)
-                    ->formatStateUsing(function ($record) {
-                        if (! $record || ! $record->exists) return '-';
-
-                        // Ambil layanan opsional yang disimpan pada order (order_services snapshot)
-                        $services = $record->services()
-                            ->where('is_required', false)
-                            ->whereNull('package_id')
-                            ->pluck('service_name')
-                            ->toArray();
-
-                        return ! empty($services) ? implode("\n", $services) : 'Tidak ada layanan tambahan';
-                    })
-                    ->hidden(fn ($livewire) => !(
-                        $livewire instanceof \Filament\Resources\Pages\ViewRecord
-                        || $livewire instanceof \Filament\Resources\Pages\ListRecords
-                    ))
-                    ->columnSpanFull(),
-
                 CheckboxList::make('optional_service_ids')
                     ->label('Layanan Tambahan (Opsional)')
                     ->options(function () {
-                        $services = \App\Models\Services::where('is_active', true)->orderBy('name')->get();
+                        $services = \App\Models\Services::where('is_active', true)
+                            ->orderBy('name')
+                            ->get();
                         return $services->mapWithKeys(fn ($s) => [ 
                             $s->id => $s->name . ' — Rp ' . number_format((float)$s->harga_layanan ?? 0, 0, ',', '.') 
                         ])->toArray();

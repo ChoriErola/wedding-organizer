@@ -14,14 +14,13 @@ class OrderService extends Model
         'package_id',
         'service_name',
         'price',
-        //'quantity',
+        'notes',
         'is_required',
         'is_custom',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
-        // 'quantity' => 'integer',
         'is_required' => 'boolean',
         'is_custom' => 'boolean',
     ];

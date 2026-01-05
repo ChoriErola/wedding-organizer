@@ -2,11 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -31,7 +31,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('panel')
             ->path('panel') // URL path for the panel (admin dan pemilik)
             ->authGuard('web') // pastikan guard sama dengan yang digunakan Livewire
-            ->login()
+            //->login()
+            ->brandName('Nakkawin Decoration')
             ->plugins([
                 BreezyCore::make()
                     ->myProfile(
@@ -59,8 +60,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                // AccountWidget::class,
+                // FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
