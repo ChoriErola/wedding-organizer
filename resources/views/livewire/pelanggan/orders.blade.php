@@ -90,7 +90,9 @@
                                     'pending' => 25,
                                     'confirmed' => 50,
                                     'paid in progress' => 75,
-                                    'paid completed' => 100,
+                                    'paid completed' => 75,
+                                    'completed' => 100,
+                                    'cancelled' => 0,
                                     default => 10,
                                 };
                                 @endphp
@@ -103,9 +105,11 @@
                                 </div>
 
                                 <div class="d-flex justify-content-between mt-1">
+                                    <small>Cancel</small>
                                     <small>Pending</small>
                                     <small>Confirmed</small>
-                                    <small>Paid</small>
+                                    <small>Paid in progress</small>
+                                    <small>Paid completed</small>
                                     <small>Completed</small>
                                 </div>
                             </div>

@@ -79,17 +79,18 @@ class Order extends Model
             }
         });
 
-        // // sinkronkan status pembayaran otomatis
-        // static::saving(function ($order) {
-        //     if ($order->isDirty('status')) {
-        //         $order->payment_status = match ($order->status) {
-        //             'confirmed' => 'unpaid',
-        //             'paid in progress' => 'paid in progress',
-        //             'paid completed' => 'paid completed',
-        //             default => $order->payment_status,
-        //         };
-        //     }
-        // });
+        // Sinkronkan status pembayaran otomatis
+        static::saving(function ($order) {
+            if ($order->isDirty('status')) {
+                $order->payment_status = match ($order->status) {
+                    'confirmed' => 'unpaid',
+                    'paid in progress' => 'paid in progress',
+                    'paid completed' => 'paid completed',
+                    'completed' => 'paid completed',
+                    default => $order->payment_status,
+                };
+            }
+        });
     }
 
     public function paymentApprovedBy()
@@ -99,11 +100,14 @@ class Order extends Model
 
     public function getPaymentStatusLabel(): string
     {
-        return match ($this->status) {
-            'confirmed' => 'Unpaid',
+        return match ($this->payment_status) {
+            'unpaid' => 'Unpaid',
+            'pending' => 'Pending',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
             'paid in progress' => 'Paid | In Progress',
             'paid completed' => 'Paid | Completed',
-            default => ucfirst($this->status),
+            default => ucfirst($this->payment_status),
         };
     }
 

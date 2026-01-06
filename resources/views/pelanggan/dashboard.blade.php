@@ -9,9 +9,9 @@
   <meta name="keywords" content="">
 
   <!-- Favicons -->
-  <link href="{{ asset('Dewi-1.0.0/assets/img/favicon.png')}}" rel="icon">
-  <link href="{{ asset('Dewi-1.0.0/assets/img/apple-touch-icon.png')}}" rel="apple-touch-icon">
-
+  <link rel="icon" href="{{ asset('images/android-chrome-512x512.png')}}">
+  <link rel="icon" href="{{ asset('images/apple-touch-icon.png')}}">
+  
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
@@ -140,10 +140,12 @@
           <div class="col-lg-3 text-center" data-aos="fade-up" data-aos-delay="100">
             @if($aboutUs && $aboutUs->image)
               <img src="{{ asset('storage/' . $aboutUs->image) }}"
+                  loading="lazy"
                   class="img-fluid rounded-4 mb-4"
                   alt="About Us">
             @else
               <img src="{{ asset('Dewi-1.0.0/assets/img/about.jpg') }}"
+                  loading="lazy"
                   class="img-fluid rounded-4 mb-4"
                   alt="">
             @endif
@@ -193,7 +195,7 @@
           <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="200">
             <div class="service-item">
               <div class="img" style="width: 100%; height: 300px; overflow: hidden;">
-                <img src="{{ asset('storage/' . $package->image) }}" class="img-fluid" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="{{ asset('storage/' . $package->image) }}" loading="lazy" class="img-fluid" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
               </div>
               <div class="details position-relative">
                 <div class="icon">
@@ -348,7 +350,7 @@
                 @foreach($portfolio->images as $image)
                   <div class="col-lg-4 col-md-6 portfolio-item isotope-item">
                     <div class="portfolio-content h-100">
-                      <img src="{{ asset('storage/' . $image) }}" class="img-fluid" alt="Portfolio Image">
+                      <img src="{{ asset('storage/' . $image) }}" loading="lazy" class="img-fluid" alt="Portfolio Image">
                       <div class="portfolio-info">
                         <h4>Portfolio</h4>
                         <p>Karya Dekorasi Kami</p>
@@ -512,6 +514,27 @@
 
   <!-- Preloader -->
   <div id="preloader"></div>
+
+  <script>
+    // Hide preloader immediately when DOM is ready
+    function hidePreloader() {
+      const preloader = document.getElementById('preloader');
+      if (preloader) {
+        preloader.style.display = 'none';
+        preloader.remove();
+      }
+    }
+
+    // Hide preloader when DOM content is loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', hidePreloader);
+    } else {
+      hidePreloader();
+    }
+
+    // Also hide on window load as fallback
+    window.addEventListener('load', hidePreloader);
+  </script>
 
   <!-- Vendor JS Files -->
   <script src="{{ asset('Dewi-1.0.0/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

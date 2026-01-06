@@ -23,8 +23,12 @@ class ContactUsTable
                     ->searchable(),
                 TextColumn::make('nomor_hp')
                     ->searchable(),
-                TextColumn::make('map_url')
+                TextColumn::make('alamat')
+                    ->label('Alamat')
                     ->searchable(),
+                TextColumn::make('map_url')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

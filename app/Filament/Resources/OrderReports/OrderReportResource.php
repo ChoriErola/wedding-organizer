@@ -74,9 +74,11 @@ class OrderReportResource extends Resource
                 BadgeColumn::make('status')
                     ->label('Status Pembayaran')
                     ->colors([
-                        'danger'  => 'confirmed',
-                        'warning' => 'paid in progress',
+                        'warning' => 'confirmed',
+                        'danger'  => 'cancelled',
+                        'info' => 'completed',
                         'success' => 'paid completed',
+                        'primary' => 'paid in progress',
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
                         'confirmed' => 'Unpaid',

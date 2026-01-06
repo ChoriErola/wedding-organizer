@@ -39,19 +39,19 @@ new class extends Component
             <ul class="navbar-nav ms-auto align-items-center gap-2">
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('dashboard') }}" wire:navigate>BERANDA</a>
+                    <a class="nav-link" href="{{ route('dashboard') }}">BERANDA</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#tentangkami">TENTANG KAMI</a>
+                    <a class="nav-link" href="{{ route('dashboard') }}#tentangkami">TENTANG KAMI</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#paket">PAKET</a>
+                    <a class="nav-link" href="{{ route('dashboard') }}#paket">PAKET</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#layanan">LAYANAN</a>
+                    <a class="nav-link" href="{{ route('dashboard') }}#layanan">LAYANAN</a>
                 </li>
 
                 <li class="nav-item">
@@ -62,11 +62,11 @@ new class extends Component
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#portfolio">PORTFOLIO</a>
+                    <a class="nav-link" href="{{ route('dashboard') }}#portfolio">PORTFOLIO</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#kontak">KONTAK</a>
+                    <a class="nav-link" href="{{ route('dashboard') }}#kontak">KONTAK</a>
                 </li>
 
                 <!-- PROFILE -->

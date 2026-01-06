@@ -9,8 +9,8 @@
   <meta name="keywords" content="">
 
   <!-- Favicons -->
-  <link href="{{ asset('Dewi-1.0.0/assets/img/favicon.png')}}" rel="icon">
-  <link href="{{ asset('Dewi-1.0.0/assets/img/apple-touch-icon.png')}}" rel="apple-touch-icon">
+  <link rel="icon" href="{{ asset('images/android-chrome-512x512.png')}}">
+  <link rel="icon" href="{{ asset('images/apple-touch-icon.png')}}">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -227,7 +227,7 @@
         <div class="row gy-4" id="servicesContainer">
 
           @forelse($services as $service)
-          <div class="col-md-6 service-item-wrapper" data-service-index="{{ $loop->index }}" style="{{ $loop->index >= 4 ? 'display: none;' : '' }}">
+          <div class="col-md-6 service-item-wrapper" data-service-index="{{ $loop->index }}" style="{{ $loop->index >= 10 ? 'display: none;' : '' }}">
               <div>
                 <h4 class="title stretched-link">{{ $service->name }}</h4>
               </div>
@@ -239,7 +239,7 @@
           </div>
           @endforelse
 
-          @if($services->count() > 4)
+          @if($services->count() > 10)
           <div class="col-12 text-center" style="margin-top: 30px;" id="showMoreBtn">
             <button onclick="toggleServices()" style="background: none; border: none; display: inline-flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; color: #e68900; font-weight: bold; font-size: 16px; padding: 0;">
               <span id="btnText">Lihat Selengkapnya</span>
@@ -447,11 +447,12 @@
         <div class="col-lg-2 col-md-3 footer-links">
           <h4>Paket Kami</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">Standar</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">Pre-Wedding Indoor</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">Pre-Wedding Outdoor</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">WO Only</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">WO All-In</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#paket">Intimate Wedding</a></li>
           </ul>
         </div>
 

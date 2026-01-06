@@ -34,7 +34,6 @@ class PackagesForm
                     ->directory('packages')
                     ->image()
                     ->imageEditor()
-                    ->maxSize(2048)
                     ->required(),
                 TextInput::make('price')
                     ->label('Harga Paket')

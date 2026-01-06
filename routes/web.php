@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\OrderController;
@@ -54,7 +53,7 @@ Route::middleware('auth')->group(function () {
         $aboutUs = AboutUs::first();
         $portfolios = PortfolioImage::all();
         $contactUs = ContactUs::first();
-        $packages = Package::all();
+        $packages = Package::with('services')->get();
         $services = Services::where('is_active', true)->get();
         return view('pelanggan.dashboard', compact('aboutUs', 'portfolios', 'contactUs', 'packages', 'services'));
     })->name('dashboard');

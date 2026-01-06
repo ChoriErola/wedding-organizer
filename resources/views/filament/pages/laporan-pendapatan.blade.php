@@ -23,7 +23,7 @@
                         wire:click="exportPdf"
                         size="sm"
                     >
-                        Export PDF
+                        Download
                     </x-filament::button>
                 </div>
             </div>

@@ -87,8 +87,8 @@ return [
          * Default attributes for Seller::class
          */
         'attributes' => [
-            'name'          => 'P PROJECT INDONESIA',
-            'address'       => 'Jl. Guru Mucthar RT/RW. 13/03 No. 38, Jelutung, Jambi, 36136',
+            'name'          => 'Nakkawin Decoration',
+            'address'       => 'Perumahan Villa Sentosa, Blok 5 No. 3, Eka Jaya, Kota Jambi',
             'custom_fields' => [
                 /*
                  * Custom attributes for Seller::class
@@ -97,7 +97,7 @@ return [
                  * attribute => value
                  */
                 'Phone' => '08117411190',
-                'Email' => 'PROJECTP643@GMAIL.COM',
+                'Email' => 'nakkawindecoration18@gmail.com',
             ],
         ],
     ],

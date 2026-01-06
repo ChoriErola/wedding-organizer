@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Invoice Wedding Organizer</title>
+    <title>Invoice {{ $order->customer->name }}</title>
 
     <style>
         body {
@@ -19,9 +19,9 @@
         }
         
         .logo {   
-            margin-top: -60px;
+            margin-top: -30px;
             position: absolute;
-            width: 200px;
+            width: 120px;
             height: auto;
         }
 
@@ -179,7 +179,7 @@
         <div>{{ $seller->custom_fields['Email'] ?? '-' }}</div>
     </div>
     <img 
-        src="{{ public_path('images/p-projectindonesia.png') }}"
+        src="{{ public_path('images/logo.jpg') }}"
         alt="Logo"
         class="logo logo-kanan"
     >
@@ -285,8 +285,8 @@
 {{-- SIGNATURE --}}
 <div class="signature">
     Hormat Kami,<br><br><br>
-    <strong>Hendri Purnama Putra</strong><br>
-    Company CEO
+    <strong>Putri Noviana Lestari</strong><br>
+    Pimpinan
 </div>
 
 </body>

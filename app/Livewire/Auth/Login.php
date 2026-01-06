@@ -30,9 +30,9 @@ class Login extends Component
         $user = Auth::user();
 
         if (in_array($user->role, ['admin', 'pemilik'])) {
-            $this->redirect('/panel', navigate: true);
+            $this->redirect('/panel');
         } else {
-            $this->redirect('/dashboard', navigate: true);
+            $this->redirect('/dashboard');
         }
     }
 
