@@ -96,7 +96,7 @@ return [
                  * Used to display additional info on Seller section in invoice
                  * attribute => value
                  */
-                'Phone' => '08117411190',
+                'Phone' => '0823-7207-0011',
                 'Email' => 'nakkawindecoration18@gmail.com',
             ],
         ],

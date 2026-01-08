@@ -84,7 +84,6 @@
     <div class="card-body p-5">
         <a
             href="/"
-            wire:navigate
             class="position-absolute top-0 start-0 m-3 text-white fs-4"
             title="Kembali ke Dashboard"
         >

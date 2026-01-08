@@ -22,7 +22,7 @@ class DashboardStats extends BaseWidget
                 ->color('info'),
             
             Stat::make('Total Pendapatan', 'Rp ' . number_format($totalRevenue, 0, ',', '.'))
-                ->description('Total harga dari semua order')
+                ->description('Total dari semua order')
                 ->icon('heroicon-o-banknotes')
                 ->color('success'),
             

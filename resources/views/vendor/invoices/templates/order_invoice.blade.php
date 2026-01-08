@@ -14,7 +14,7 @@
         /* ===== HEADER ===== */
         .header {
             margin-bottom: 30px;
-            border-bottom: 3px solid #0f4c63;
+            border-bottom: 3px solid #676767;
             padding-bottom: 15px;
         }
         
@@ -73,7 +73,7 @@
         }
 
         th {
-            background: #0f4c63;
+            background: #676767;
             padding: 8px;
             border: 1px solid #ddd;
             text-align: center;
@@ -101,8 +101,8 @@
         }
 
         .payment-summary tr:first-child td {
-            border-top: 2px solid #0f4c63;
-            border-bottom: 2px solid #0f4c63;
+            border-top: 2px solid #676767;
+            border-bottom: 2px solid #676767;
             background: #f3f4f6;
             font-weight: bold;
             font-size: 13px;
@@ -111,11 +111,11 @@
         }
 
         .payment-summary tr:last-child td {
-            background: #0f4c63;
+            background: #676767;
             color: #fff;
             font-weight: bold;
             font-size: 15px;
-            border-bottom: 2px solid #0f4c63;
+            border-bottom: 2px solid #676767;
             padding-top: 15px;
             padding-bottom: 15px;
         }
@@ -255,15 +255,15 @@
     {!! nl2br(e($order->notes)) !!}
 </div>
 @endif
-
+<br>
 {{-- PAYMENT INFO & PAYMENT NOTES --}}
 <div class="payment-section">
     {{-- PAYMENT INFO --}}
     <div class="payment-info">
         <strong>INSTRUKSI PEMBAYARAN</strong><br><br>
-        Bank BCA<br>
-        No Rek: <strong>1192094903</strong><br>
-        A/N Hendri Purnama Putra<br><br>
+        Bank BRI<br>
+        No Rek: <strong>213124122311</strong><br>
+        A/N Putri Noviana Lestari<br><br>
 
         Pelunasan maksimal H+3 setelah
         {{ $order->event_date ? \Carbon\Carbon::parse($order->event_date)->format('d F Y') : '-' }}
@@ -281,7 +281,8 @@
     </div>
     @endif
 </div>
-
+<br>
+<br>
 {{-- SIGNATURE --}}
 <div class="signature">
     Hormat Kami,<br><br><br>

@@ -21,8 +21,7 @@ new class extends Component
 
         <!-- LOGO -->
         <a class="navbar-brand fw-bold d-flex align-items-center"
-           href="{{ route('dashboard') }}"
-           wire:navigate>
+           href="{{ route('dashboard') }}">
             Nakkawin Decoration
         </a>
 
